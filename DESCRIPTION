@@ -20,7 +20,9 @@ LazyData: true
 Depends:
     R (>= 4.0.0)
 Imports: 
-    httr
+    httr,
+    dplyr,
+    janitor
 Suggests:
     purrr,
     stringr

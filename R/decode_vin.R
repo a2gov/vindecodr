@@ -28,32 +28,11 @@ decode_vin <- function(vin, ...) {
         msg <- paste("API responded with status code", response$status_code)
         stop(msg)
     }
-
     con <- httr::content(response)$Results
-    if (requireNamespace("purrr", quietly = TRUE)) {
-        VIN        <- purrr::map_chr(con, "VIN")
-        make       <- purrr::map_chr(con, "Make")
-        model      <- purrr::map_chr(con, "Model")
-        model_year <- purrr::map_chr(con, "ModelYear")
-        fuel_type  <- purrr::map_chr(con, "FuelTypePrimary")
-        GVWR       <- purrr::map_chr(con, "GVWR")
-    } else {
-        VIN            <- c()
-        make           <- c()
-        model          <- c()
-        model_year     <- c()
-        fuel_type      <- c()
-        GVWR           <- c()
-        for (i in seq_along(con)) {
-            VIN        <- append(VIN, con[[i]]$VIN)
-            make       <- append(make, con[[i]]$Make)
-            model      <- append(model, con[[i]]$Model)
-            model_year <- append(model_year, con[[i]]$ModelYear)
-            fuel_type  <- append(fuel_type, con[[i]]$FuelTypePrimary)
-            GVWR       <- append(GVWR, con[[i]]$GVWR)
-        }
-    }
-    data.frame(VIN, make, model, model_year, fuel_type, GVWR)
+    out <- dplyr::bind_rows(con)
+    out |>
+        dplyr::select(c("VIN", "Make", "Model", "ModelYear", "FuelTypePrimary", "FuelTypeSecondary", "GVWR"), dplyr::everything()) |>
+        janitor::clean_names()
 }
 
 
